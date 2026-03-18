@@ -1,29 +1,29 @@
-import { type InputHTMLAttributes, forwardRef } from 'react';
+import { forwardRef, type InputHTMLAttributes } from "react"
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  error?: string;
+	label?: string
+	error?: string
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className = '', label, error, id, ...props }, ref) => {
-    return (
-      <div className="flex flex-col gap-1.5">
-        {label && (
-          <label htmlFor={id} className="text-sm font-medium text-[var(--color-foreground)]">
-            {label}
-          </label>
-        )}
-        <input
-          ref={ref}
-          id={id}
-          className={`w-full px-4 py-2.5 bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl text-[var(--color-foreground)] placeholder:text-[var(--color-muted)] focus:outline-none focus:border-[var(--color-accent)] transition-colors ${className}`}
-          {...props}
-        />
-        {error && <span className="text-sm text-red-500">{error}</span>}
-      </div>
-    );
-  }
-);
+	({ className = "", label, error, id, ...props }, ref) => {
+		return (
+			<div className="flex flex-col gap-1.5">
+				{label && (
+					<label htmlFor={id} className="font-medium text-foreground text-sm">
+						{label}
+					</label>
+				)}
+				<input
+					ref={ref}
+					id={id}
+					className={`w-full rounded-xl border border-border bg-card px-4 py-2.5 text-foreground transition-colors placeholder:text-muted focus:border-accent focus:outline-none ${className}`}
+					{...props}
+				/>
+				{error && <span className="text-red-500 text-sm">{error}</span>}
+			</div>
+		)
+	},
+)
 
-Input.displayName = 'Input';
+Input.displayName = "Input"

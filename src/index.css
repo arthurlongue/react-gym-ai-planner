@@ -2,34 +2,64 @@
 @import "@neondatabase/neon-js/ui/tailwind";
 
 @theme {
-  --font-sans: "Geist", system-ui, sans-serif;
+	--font-sans: "Geist", system-ui, sans-serif;
 
-  --color-background: #0a0a0a;
-  --color-foreground: #fafafa;
-  --color-muted: #a1a1aa;
-  --color-border: #27272a;
-  --color-card: #18181b;
-  --color-accent: #a3e635;
-  --color-accent-hover: #84cc16;
+	--color-background: #0a0a0a;
+	--color-foreground: #fafafa;
+	--color-muted: #a1a1aa;
+	--color-border: #27272a;
+	--color-card: #18181b;
+	--color-accent: #a3e635;
+	--color-accent-hover: #84cc16;
 }
 
 @layer base {
-  html {
-    font-family: var(--font-sans);
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-  }
+	html {
+		font-family: var(--font-sans);
+		background-color: var(--color-background);
+		color: var(--color-foreground);
+	}
 
-  body {
-    margin: 0;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+	body {
+		margin: 0;
+		min-height: 100vh;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
 
-  /* Override Better Auth skeleton colors */
-  [data-slot="skeleton"],
-  .animate-pulse {
-    background-color: var(--color-border) !important;
-  }
+	/* Override Better Auth skeleton colors */
+	[data-slot="skeleton"],
+	.animate-pulse {
+		background-color: var(--color-border);
+	}
+}
+
+@layer components {
+	.page-container {
+		@apply min-h-screen px-6 pt-24 pb-12;
+	}
+
+	.page-center {
+		@apply flex min-h-screen items-center justify-center;
+	}
+
+	.container-sm {
+		@apply mx-auto max-w-xl;
+	}
+
+	.container-md {
+		@apply mx-auto max-w-4xl;
+	}
+
+	.container-lg {
+		@apply mx-auto max-w-6xl;
+	}
+
+	.loading-spinner {
+		@apply h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent;
+	}
+
+	.icon-container {
+		@apply flex h-10 w-10 items-center justify-center;
+	}
 }
