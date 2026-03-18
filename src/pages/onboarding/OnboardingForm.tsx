@@ -34,7 +34,7 @@ export function OnboardingForm({
 			<Card variant="bordered" className="py-16 text-center">
 				<Loader2 className="mx-auto mb-6 h-12 w-12 animate-spin text-accent" />
 				<h1 className="mb-2 font-bold text-2xl">Creating your Plan</h1>
-				<p className="text-muted">Our AI is building your personalized training program...</p>
+				<p className="text-muted">Our AI is building your personalized training program. This can take up to 2 minutes.</p>
 			</Card>
 		)
 	}

@@ -56,7 +56,11 @@ planRouter.post("/generate", async (req: Request, res: Response) => {
 			createdAt: newPlan.created_at,
 		})
 	} catch (_error) {
-		res.status(500).json({ error: "Failed to generate plan" })
+		console.error("Error generating plan:", _error)
+		res.status(500).json({
+			error: "Failed to generate plan",
+			details: _error instanceof Error ? _error.message : "Unknown error",
+		})
 	}
 })
 

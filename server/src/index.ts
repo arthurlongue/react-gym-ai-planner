@@ -1,11 +1,10 @@
+import "./lib/env"
 import cookieParser from "cookie-parser"
 import cors from "cors"
-import dotenv from "dotenv"
 import express from "express"
+import path from "path"
 import { planRouter } from "./routes/plan"
 import { profileRouter } from "./routes/profile"
-
-dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -18,4 +17,15 @@ app.use(express.json())
 app.use("/api/profile", profileRouter)
 app.use("/api/plan", planRouter)
 
-app.listen(PORT, () => {})
+// Serve frontend in production
+if (process.env.NODE_ENV === "production") {
+	const distPath = path.join(process.cwd(), "../dist")
+	app.use(express.static(distPath))
+	app.get("*", (_req, res) => {
+		res.sendFile(path.join(distPath, "index.html"))
+	})
+}
+
+app.listen(PORT, () => {
+    //
+})

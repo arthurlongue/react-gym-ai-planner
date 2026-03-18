@@ -1,8 +1,6 @@
-import dotenv from "dotenv"
 import OpenAI from "openai"
 import type { TrainingPlanData, UserProfile } from "../../types"
-
-dotenv.config()
+import "./env"
 
 export async function generateTrainingPlan(
 	profile: UserProfile | Record<string, any>,

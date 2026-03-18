@@ -6,14 +6,15 @@ import type {
 	TrainingPlan,
 } from "../types"
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001"
+const BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://localhost:3001")
 
 async function request<T>(path: string, init: RequestInit) {
 	const res = await fetch(`${BASE_URL}/api${path}`, init)
 
 	if (!res.ok) {
 		const payload = await res.json().catch(() => ({}))
-		throw new Error(payload.error || payload.message || "Request failed")
+		const message = payload.error || payload.message || "Request failed"
+		throw new Error(payload.details ? `${message}: ${payload.details}` : message)
 	}
 
 	return (await res.json()) as T
