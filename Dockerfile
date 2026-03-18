@@ -6,9 +6,10 @@ RUN npm i -g pnpm
 FROM base AS deps
 WORKDIR /app
 COPY pnpm-lock.yaml package.json ./
-COPY server/package.json ./server/
+COPY server/package.json server/pnpm-lock.yaml ./server/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store cd server && pnpm install --frozen-lockfile
 
 # 3. Builder Stage: Build the frontend and Prisma
 FROM base AS builder
