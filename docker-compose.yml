@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  app:
+    # Update to your actual container registry/image name
+    image: ghcr.io/arthurlongue/react-gym-ai-planner:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Pass through env variables or define them here for production
+      - DATABASE_URL=${DATABASE_URL}
+      - OPEN_ROUTER_KEY=${OPEN_ROUTER_KEY}
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+
+      - "traefik.http.routers.gymplanner-http.rule=Host(`gym.artudev.com`)"
+      - "traefik.http.routers.gymplanner-http.entrypoints=web"
+      - "traefik.http.routers.gymplanner-http.middlewares=gymplanner-redirect"
+      - "traefik.http.middlewares.gymplanner-redirect.redirectscheme.scheme=https"
+
+      # HTTPS Main
+      - "traefik.http.routers.gymplanner.rule=Host(`gym.artudev.com`)"
+      - "traefik.http.routers.gymplanner.entrypoints=websecure"
+      - "traefik.http.routers.gymplanner.tls=true"
+      - "traefik.http.routers.gymplanner.tls.certresolver=le" # Matches your Let's Encrypt resolver
+      
+      # Load Balancer Profile
+      - "traefik.http.services.gymplanner.loadbalancer.server.port=3000"
+      - "traefik.http.services.gymplanner.loadbalancer.sticky.cookie=true"
+      - "traefik.http.services.gymplanner.loadbalancer.sticky.cookie.name=gymplanner_sticky"
+      - "traefik.http.services.gymplanner.loadbalancer.sticky.cookie.httpOnly=true"
+      - "traefik.http.services.gymplanner.loadbalancer.sticky.cookie.secure=true"
+      - "traefik.http.services.gymplanner.loadbalancer.sticky.cookie.sameSite=lax"
+      
+      # Healthcheck (We don't have a specific /api/health route yet, you can add one or use an existing unauthenticated GET route)
+      # - "traefik.http.services.gymplanner.loadbalancer.healthcheck.path=/api/health"
+      # - "traefik.http.services.gymplanner.loadbalancer.healthcheck.interval=10s"
+      # - "traefik.http.services.gymplanner.loadbalancer.healthcheck.timeout=3s"
+
+    deploy:
+      replicas: 2 # Rolling, zero-downtime updates
+      update_config:
+        parallelism: 1
+        order: stop-first
+        delay: 10s
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true

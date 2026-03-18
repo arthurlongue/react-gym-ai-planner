@@ -1,8 +1,8 @@
-import "./lib/env"
 import cookieParser from "cookie-parser"
 import cors from "cors"
 import express from "express"
 import path from "path"
+import "./lib/env"
 import { planRouter } from "./routes/plan"
 import { profileRouter } from "./routes/profile"
 
@@ -27,5 +27,5 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.listen(PORT, () => {
-    //
+	//
 })

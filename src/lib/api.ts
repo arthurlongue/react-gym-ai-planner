@@ -6,7 +6,8 @@ import type {
 	TrainingPlan,
 } from "../types"
 
-const BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://localhost:3001")
+const BASE_URL =
+	import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://localhost:3001")
 
 async function request<T>(path: string, init: RequestInit) {
 	const res = await fetch(`${BASE_URL}/api${path}`, init)
