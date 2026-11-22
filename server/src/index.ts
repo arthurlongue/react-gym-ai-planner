@@ -1,19 +1,34 @@
-import cookieParser from "cookie-parser"
 import cors from "cors"
 import express from "express"
 import path from "path"
-import "./lib/env"
+import { requireUser } from "./lib/auth"
 import { planRouter } from "./routes/plan"
 import { profileRouter } from "./routes/profile"
 
 const app = express()
 const PORT = process.env.PORT || 3001
 
-app.use(cors())
-app.use(cookieParser())
-app.use(express.json())
+const allowedOrigins: (string | RegExp)[] = [
+	"https://gym.artudev.com",
+	...(process.env.CORS_ORIGIN?.split(",")
+		.map((origin) => origin.trim())
+		.filter(Boolean) ?? []),
+]
+if (process.env.NODE_ENV !== "production") {
+	allowedOrigins.push(/^http:\/\/localhost(?::\d+)?$/)
+}
 
-//API Routes
+app.use(
+	"/api",
+	cors({
+		origin: allowedOrigins,
+		methods: ["GET", "POST"],
+		allowedHeaders: ["Authorization", "Content-Type"],
+	}),
+	requireUser,
+	express.json(),
+)
+
 app.use("/api/profile", profileRouter)
 app.use("/api/plan", planRouter)
 

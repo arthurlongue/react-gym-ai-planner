@@ -1,6 +1,6 @@
 # 1. Base Stage: Install pnpm
 FROM node:22-alpine AS base
-RUN npm i -g pnpm
+RUN npm i -g pnpm@10.34.9
 
 # 2. Dependencies Stage: Install dependencies for caching
 FROM base AS deps
@@ -21,7 +21,7 @@ COPY --from=deps /app/server/node_modules ./server/node_modules
 COPY . .
 
 # Generate Prisma client
-RUN cd server && pnpm dlx prisma generate
+RUN cd server && pnpm exec prisma generate
 
 # Declare build-time environment variables for Vite
 ARG VITE_NEON_AUTH_URL
@@ -37,11 +37,14 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 
+ARG VITE_NEON_AUTH_URL
+ENV VITE_NEON_AUTH_URL=$VITE_NEON_AUTH_URL
+
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && adduser -S gymrunner -u 1001
 
 # We need pnpm to run our tsx start script, or we install it globally
-RUN npm i -g pnpm
+RUN npm i -g pnpm@10.34.9
 
 # Copy only the necessary files from the builder stage with proper ownership
 COPY --chown=gymrunner:nodejs --from=builder /app/package.json /app/pnpm-lock.yaml ./

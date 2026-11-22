@@ -1,18 +1,14 @@
-import { type Request, type Response, Router } from "express"
+import { Router } from "express"
 import { prisma } from "../lib/prisma"
 
 export const profileRouter = Router()
 
-profileRouter.post("/", async (req: Request, res: Response) => {
+profileRouter.post("/", async (req, res) => {
 	try {
-		const { userId, ...profileData } = req.body
-
-		if (!userId) {
-			return res.status(400).json({ error: "User ID is required" })
-		}
+		const { userId } = res.locals
 
 		const { goal, experience, daysPerWeek, sessionLength, equipment, injuries, preferredSplit } =
-			profileData
+			req.body ?? {}
 
 		if (!goal || !experience || !daysPerWeek || !sessionLength || !equipment || !preferredSplit) {
 			return res.status(400).json({ error: "Missing required fields" })

@@ -9,7 +9,6 @@ interface AuthContextType {
 	isLoading: boolean
 	saveProfile: (profile: Omit<UserProfile, "userId" | "updatedAt">) => Promise<void>
 	generatePlan: () => Promise<void>
-	refreshPlan: (userId: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -19,14 +18,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 	const [plan, setPlan] = useState<TrainingPlan | null>(null)
 	const [isLoading, setIsLoading] = useState(true)
 
-	const refreshPlan = useCallback(async (userId: string) => {
-		if (!userId) {
-			setPlan(null)
-			return
-		}
-
+	const refreshPlan = useCallback(async () => {
 		try {
-			const response = await api.getCurrentPlan({ userId })
+			const response = await api.getCurrentPlan()
 			setPlan(response)
 		} catch (_error) {
 			setPlan(null)
@@ -47,7 +41,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 				setUser(nextUser)
 
 				if (nextUser) {
-					await refreshPlan(nextUser.id)
+					await refreshPlan()
 				} else {
 					setPlan(null)
 				}
@@ -75,11 +69,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 			throw new Error("User must be authenticated to save profile")
 		}
 
-		await api.saveProfile({
-			userId: user.id,
-			...profileData,
-		})
-		await refreshPlan(user.id)
+		await api.saveProfile(profileData)
+		await refreshPlan()
 	}
 
 	async function generatePlan() {
@@ -87,8 +78,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 			throw new Error("User must be authenticated to generate plan")
 		}
 
-		await api.generatePlan({ userId: user.id })
-		await refreshPlan(user.id)
+		await api.generatePlan()
+		await refreshPlan()
 	}
 
 	return (
@@ -99,7 +90,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 				isLoading,
 				saveProfile,
 				generatePlan,
-				refreshPlan,
 			}}
 		>
 			{children}

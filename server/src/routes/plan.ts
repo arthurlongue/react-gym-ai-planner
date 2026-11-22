@@ -1,16 +1,22 @@
-import { type Request, type Response, Router } from "express"
+import { Router } from "express"
+import { rateLimit } from "express-rate-limit"
 import { generateTrainingPlan } from "../lib/ai"
 import { prisma } from "../lib/prisma"
 
 export const planRouter = Router()
 
-planRouter.post("/generate", async (req: Request, res: Response) => {
-	try {
-		const { userId } = req.body
+const limitGeneration = rateLimit({
+	windowMs: 60 * 60 * 1000,
+	limit: 5,
+	keyGenerator: (_req, res) => res.locals.userId,
+	standardHeaders: "draft-8",
+	legacyHeaders: false,
+	message: { error: "Too many plan requests. Try again later." },
+})
 
-		if (!userId) {
-			return res.status(400).json({ error: "User ID is required" })
-		}
+planRouter.post("/generate", limitGeneration, async (_req, res) => {
+	try {
+		const { userId } = res.locals
 
 		const profile = await prisma.user_profiles.findUnique({
 			where: { user_id: userId },
@@ -64,12 +70,9 @@ planRouter.post("/generate", async (req: Request, res: Response) => {
 	}
 })
 
-planRouter.get("/current", async (req: Request, res: Response) => {
+planRouter.get("/current", async (_req, res) => {
 	try {
-		const userId = req.query.userId as string
-		if (!userId) {
-			return res.status(400).json({ error: "User ID is required" })
-		}
+		const { userId } = res.locals
 
 		const plan = await prisma.training_plans.findFirst({
 			where: { user_id: userId },

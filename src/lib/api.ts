@@ -1,16 +1,28 @@
 import type {
-	GeneratePlanRequest,
 	GeneratePlanResponse,
 	SaveProfileRequest,
 	SaveProfileResponse,
 	TrainingPlan,
 } from "../types"
+import { authClient } from "./auth"
 
 const BASE_URL =
 	import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://localhost:3001")
 
 async function request<T>(path: string, init: RequestInit) {
-	const res = await fetch(`${BASE_URL}/api${path}`, init)
+	const { data, error } = await authClient.getSession()
+	if (error) {
+		throw new Error(error.message ?? "Unable to check session")
+	}
+
+	const token = data?.session.token
+	if (!token) {
+		throw new Error("Authentication required")
+	}
+
+	const headers = new Headers(init.headers)
+	headers.set("Authorization", `Bearer ${token}`)
+	const res = await fetch(`${BASE_URL}/api${path}`, { ...init, headers })
 
 	if (!res.ok) {
 		const payload = await res.json().catch(() => ({}))
@@ -40,11 +52,11 @@ export const api = {
 		return post<SaveProfileResponse>("/profile", body)
 	},
 
-	generatePlan: (body: GeneratePlanRequest) => {
-		return post<GeneratePlanResponse>("/plan/generate", body)
+	generatePlan: () => {
+		return request<GeneratePlanResponse>("/plan/generate", { method: "POST" })
 	},
 
-	getCurrentPlan: (params: { userId: string }) => {
-		return get<TrainingPlan>(`/plan/current?userId=${encodeURIComponent(params.userId)}`)
+	getCurrentPlan: () => {
+		return get<TrainingPlan>("/plan/current")
 	},
 }

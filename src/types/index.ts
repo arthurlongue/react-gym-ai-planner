@@ -52,16 +52,10 @@ export interface TrainingPlan {
 	createdAt: string
 }
 
-export interface SaveProfileRequest extends Omit<UserProfile, "userId" | "updatedAt"> {
-	userId: string
-}
+export type SaveProfileRequest = Omit<UserProfile, "userId" | "updatedAt">
 
 export interface SaveProfileResponse {
 	success: true
-}
-
-export interface GeneratePlanRequest {
-	userId: string
 }
 
 export interface GeneratePlanResponse {
