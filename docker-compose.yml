@@ -7,6 +7,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        VITE_NEON_AUTH_URL: ${VITE_NEON_AUTH_URL}
     environment:
       - NODE_ENV=production
       - PORT=3000

@@ -63,7 +63,9 @@ Backend routes:
 
 - `POST /api/profile` save or update the user profile
 - `POST /api/plan/generate` generate and persist a new plan version
-- `GET /api/plan/current?userId=...` fetch the latest plan
+- `GET /api/plan/current` fetch the signed-in user’s latest plan
+
+All API routes require a Neon Auth Bearer token. Plan generation allows five requests per account per hour per server instance.
 
 ## Environment Variables
 
@@ -71,7 +73,7 @@ Create a `.env` or `.env.local` file at the repo root. The backend also checks `
 
 Frontend:
 
-- `VITE_NEON_AUTH_URL` Neon Auth project URL
+- `VITE_NEON_AUTH_URL` Neon Auth project URL shared by the frontend and backend
 - `VITE_API_URL` optional API base URL
 
 Backend:
@@ -79,6 +81,7 @@ Backend:
 - `DATABASE_URL` PostgreSQL connection string
 - `OPEN_ROUTER_KEY` OpenRouter API key
 - `BASE_URL` optional app URL sent as the request referer header to OpenRouter
+- `CORS_ORIGIN` optional comma-separated list of additional frontend origins
 - `PORT` optional backend port, defaults to `3001` in local development
 
 Example:
